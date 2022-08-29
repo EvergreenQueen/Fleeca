@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Obstacles : MonoBehaviour
@@ -8,7 +9,9 @@ public class Obstacles : MonoBehaviour
     [SerializeField] GameObject start;
     [SerializeField] GameObject goal;
     [SerializeField] GameObject obstacle;
+    [SerializeField] GameObject path;
 
+    [SerializeField] List<GameObject> paths;
     [SerializeField] List<GameObject> obstacles;
 
 
@@ -23,8 +26,8 @@ public class Obstacles : MonoBehaviour
     [SerializeField] float absY = 5.5f;
     
     [Header("Misc")]
-    [SerializeField] List<Vector2> points;
-    [SerializeField] List<Vector2> fullPoints;
+    [SerializeField] List<Vector3> points;
+    [SerializeField] List<Vector3> fullPoints;
 
     
 
@@ -37,8 +40,8 @@ public class Obstacles : MonoBehaviour
     void Start()
     {   
         pointDensity  = 3 + 2*(numPoints) ;
-        points.Add(new Vector2(start.transform.position.x,start.transform.position.y));
-        fullPoints.Add(new Vector2(start.transform.position.x,start.transform.position.y));
+        points.Add(new Vector3(start.transform.position.x,start.transform.position.y, 0));
+        fullPoints.Add(new Vector3(start.transform.position.x,start.transform.position.y, 0));
         SetPath();
         SetObstacles();
     }
@@ -53,17 +56,19 @@ public class Obstacles : MonoBehaviour
         for(int i = Mathf.CeilToInt(obstacleDensity*obstacleMult); i <= 0; i--)
         {   
             
-            GameObject temp = Instantiate(obstacle, new Vector3(fullPoints[i].x, fullPoints[i].y, 0), Quaternion.identity)
-            temp.transform.localscale(Random.range(0.1, maxSizeMult)*absX, Random.range(0.1, maxSizeMult)*absY, 0)
+            GameObject temp = Instantiate(obstacle, new Vector3(fullPoints[i].x, fullPoints[i].y, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3(Random.Range(0.1f, maxSizeMult)*absX, Random.Range(0.1f, maxSizeMult)*absY, 0);
             foreach(GameObject ob in obstacles){
-                if(temp.position.x  <=  && temp.position.y ){
+                // if(temp.position.x  <=  && temp.position.y ){
 
-                }
+                // }
             }
             
-            if(!){
-                obstacles.Add(temp);
-            }
+            // if(!){
+            //     obstacles.Add(temp);
+            // }
+
+
 
 
         }
@@ -77,14 +82,14 @@ public class Obstacles : MonoBehaviour
         Debug.Log("Started Setpath");
 
         for(int i = 0; i < numPoints; i++){
-            sheesh = new Vector2(Random.Range(-absX + minPathWidth/2, absX - minPathWidth/2), Random.Range(-absY + minPathWidth/2, absY - minPathWidth/2));
+            sheesh = new Vector3(Random.Range(-absX + minPathWidth/2, absX - minPathWidth/2), Random.Range(-absY + minPathWidth/2, absY - minPathWidth/2), 0);
             points.Add(sheesh);
             fullPoints.Add(sheesh);
         }
         Debug.Log("Generated points");
 
-        points.Add(new Vector2(goal.transform.position.x, goal.transform.position.y));
-        fullPoints.Add(new Vector2(goal.transform.position.x, goal.transform.position.y));
+        points.Add(new Vector3(goal.transform.position.x, goal.transform.position.y, 0));
+        fullPoints.Add(new Vector3(goal.transform.position.x, goal.transform.position.y, 0));
         Debug.Log("added goal");
 
 
@@ -92,9 +97,9 @@ public class Obstacles : MonoBehaviour
             Debug.Log("Current Index: " + j);
             Debug.Log("Current Size: " + fullPoints);
             if(Random.Range(-1.0f, 1.0f) > 0){
-                sheesh = new Vector2(fullPoints[j].x, fullPoints[j+1].y);
+                sheesh = new Vector3(fullPoints[j].x, fullPoints[j+1].y, 1);
             }else{
-                sheesh = new Vector2(fullPoints[j+1].x, fullPoints[j].y);
+                sheesh = new Vector3(fullPoints[j+1].x, fullPoints[j].y, -1);
             }
             
             fullPoints.Insert(j+1, sheesh);
@@ -106,6 +111,14 @@ public class Obstacles : MonoBehaviour
         //Comment out later
         for(int k = 0; k < pointDensity; k++){
             Instantiate(obstacle, new Vector3(fullPoints[k].x, fullPoints[k].y, 0), Quaternion.identity);
+        }
+        //END OF COMMENT
+
+        for(int i = 0; i < pointDensity - 1 ; i++){
+            GameObject temp = Instantiate(path, new Vector3(1, 1, 0), Quaternion.identity);
+            temp.transform.localScale = new Vector3();
+            paths.Add(temp);
+            //Debug.Log(fullPoints.ElementAt(i));
         }
 
     }
